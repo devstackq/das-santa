@@ -34,17 +34,77 @@ type Weight struct {
 type Volume struct {
 }
 type Optimal struct {
+	gifts  []Gift
+	Result [][]Gift
 }
 
-func NewOptimal() *Optimal {
-	return &Optimal{}
+func NewOptimal(data []Gift) *Optimal {
+	return &Optimal{
+		gifts: data,
+	}
+}
+
+func (o *Optimal) Sort() {
+	type IndexValue struct {
+		IndexGift int
+		Value     float64
+	}
+	temp := o.gifts
+	var opts []IndexValue
+
+	//prepare data
+	for idx, gift := range temp {
+		diff := (gift.Weight / maxWeight) - (gift.Volume / maxVolume)
+		opt := IndexValue{}
+		opt.IndexGift = idx
+		opt.Value = math.Abs(diff)
+
+		opts = append(opts, opt)
+	}
+
+	sort.SliceStable(opts, func(i, j int) bool {
+		return opts[i].Value < opts[j].Value
+	})
+
+	sorted := make([]Gift, len(opts))
+
+	for idx, item := range opts {
+		sorted[idx] = temp[item.IndexGift]
+	}
+
+	o.separate(sorted)
+
+}
+func (o *Optimal) separate(sorted []Gift) {
+
+	var result [][]Gift
+
+	sumVolume := 0.0
+	sumWeight := 0.0
+
+	var temp []Gift
+
+	for _, gift := range sorted {
+		if sumWeight <= maxWeight && sumWeight+gift.Weight <= maxWeight || sumVolume <= maxVolume && sumVolume+gift.Volume <= maxVolume {
+			temp = append(temp, gift)
+			sumVolume += gift.Volume
+			sumWeight += gift.Weight
+		} else {
+			result = append(result, temp)
+			sumVolume = 0
+			sumWeight = 0
+			temp = nil
+		}
+	}
+
+	o.Result = result
 }
 
 func (eg *EstimatationGifts) SortByWeightAsc() {
 	temp := eg.Gifts
 
 	sort.SliceStable(temp, func(i, j int) bool {
-		return temp[i].Weight > temp[j].Weight
+		return temp[i].Weight < temp[j].Weight
 	})
 	eg.separateByWeight(temp)
 
@@ -95,62 +155,8 @@ func (eg *EstimatationGifts) SortByVolumeAsc() {
 	temp := eg.Gifts
 
 	sort.SliceStable(temp, func(i, j int) bool {
-		return temp[i].Volume > temp[j].Volume
+		return temp[i].Volume < temp[j].Volume
 	})
 
 	eg.separateByVolume(temp)
-}
-
-//func (o *Optimal) Sort()
-
-func (eg *EstimatationGifts) SortOptimal() {
-	type Optimal struct {
-		IndexGift int
-		Value     float64
-	}
-	temp := eg.Gifts
-	opts := []Optimal{}
-
-	//prepare data
-	for idx, gift := range temp {
-		diff := gift.Weight/maxWeight - gift.Volume/maxVolume
-		opt := Optimal{}
-		opt.IndexGift = idx
-		opt.Value = math.Abs(diff)
-
-		opts = append(opts, opt)
-	}
-	sort.SliceStable(opts, func(i, j int) bool {
-		return opts[i].Value < opts[j].Value
-	})
-	tmpGifts := make([]Gift, len(temp))
-
-	for idx, item := range opts {
-		tmpGifts[idx] = temp[item.IndexGift]
-	}
-
-	eg.separateByOptimal(tmpGifts)
-
-}
-
-func (eg *EstimatationGifts) separateByOptimal(data []Gift) {
-	result := [][]Gift{}
-	sumVolume := 0.0
-	sumWeight := 0.0
-
-	var temp []Gift
-
-	for _, gift := range data {
-		if sumWeight <= maxWeight && sumWeight+gift.Weight <= maxWeight || sumVolume <= maxVolume && sumVolume+gift.Volume <= maxVolume {
-			temp = append(temp, gift)
-			sumVolume += gift.Volume
-			sumWeight += gift.Weight
-		} else {
-			result = append(result, temp)
-			sumVolume = 0
-			sumWeight = 0
-			temp = nil
-		}
-	}
-	eg.Optimal = result
 }
