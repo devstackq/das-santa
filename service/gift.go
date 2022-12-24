@@ -39,5 +39,5 @@ func (g *GiftSrv) Estimate() [][]models.Gift {
 	log.Println("sorted by opt", len(opt.Result))
 	log.Println("sorted by wei", len(s.ByWeight))
 
-	return nil
+	return opt.Result //FIXME try to other sorted data
 }
