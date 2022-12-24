@@ -1,8 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/devstackq/das-santa.git/models"
 	"github.com/devstackq/das-santa.git/service"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"net/http"
 )
 
 const mapID = "faf7ef78-41b3-4a36-8423-688a61929c08"
@@ -19,12 +24,32 @@ func New(srv *service.Service) *Handler {
 	}
 }
 func (h Handler) Qasqyr(c *gin.Context) {
-	/*
-		1 getMap
-		2 run srv.Ebash(request.Map)
-		3
-	*/
+	data := models.Map{}
 
+	requestURL := fmt.Sprint(basePath, "/json/map/", mapID, ".json")
+	resp, err := http.Get(requestURL)
+
+	if err != nil {
+		c.Status(400)
+		return
+	}
+	bb, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		c.Status(400)
+		return
+	}
+	err = json.Unmarshal(bb, &data)
+	if err != nil {
+		c.Status(400)
+		return
+	}
+
+	if err := h.srv.Ebash(data.Gifts); err != nil {
+		c.Status(400)
+		return
+	}
+
+	c.Status(200)
 }
 
 func (h Handler) GetMap(c *gin.Context) {

@@ -15,25 +15,35 @@ func NewGift(gifts []models.Gift) *GiftSrv {
 	}
 }
 
-func (g *GiftSrv) Estimate() models.EstimatationGifts {
-	log.Println("find estimate gifts")
-	//w/200 + v/100
-	optimal := models.EstimatationGifts{
-		Gifts:    g.Data,
-		Optimal:  [][]models.Gift{},
-		ByVolume: [][]models.Gift{},
-		ByWeight: [][]models.Gift{},
+type Sortir interface {
+	Sort([]models.Gift) [][]models.Gift
+}
+
+todo:
+fix - optimal
+refactor oplymorphysm
+
+func (g *GiftSrv) Estimate() [][]models.Gift {
+	log.Println("find estimate gifts", len(g.Data))
+
+	s := models.EstimatationGifts{
+		Gifts:   g.Data,
+		Optimal: [][]models.Gift{},
 	}
+	s.SortOptimal()
+	//opt := models.NewOptimal(g.Data)
+	//opt.Sort()
+	//
+	//vol := models.NewVolume(g.Data)
+	//vol.Sort()
 
-	const maxWeight = 200 //12
-	const maxVolume = 100 //7
+	s.SortByVolumeAsc()
+	s.SortByWeightAsc()
 
-	//1 sort, min max, all items;
-	//2 sort - each part gift; 7
+	log.Println("sorted by volume", len(s.ByVolume))
 
-	optimal.SortByVolumeAsc()
-	optimal.SortByWeightAsc()
-	optimal.SortOptimal()
+	log.Println("sorted by opt", len(s.Optimal))
+	log.Println("sorted by wei", len(s.ByWeight))
 
-	return optimal
+	return nil
 }
