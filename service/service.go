@@ -14,14 +14,16 @@ func New() *Service {
 	return &Service{}
 }
 
-func (s Service) Ebash(data []models.Gift) error {
+func (s Service) Ebash(data models.Map) error {
 	//1. estimate gift
-	gift := NewGift(data)
-	gift.Estimate()
+	gift := NewGift(data.Gifts)
+	optimalGifts := gift.Estimate()
 
-	s.gift = gift //set estimate gifts
-
+	//s.gift = gift //set estimate gifts
 	//2. find optimal path
+	pathFind := NewPath(optimalGifts, data.Children, data.SnowAreas)
+	pathFind.НайтиОптимальныеПути()
+	pathFind.РаздатьПодарки()
 
 	//3. send gifts
 

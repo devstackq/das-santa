@@ -44,7 +44,7 @@ func (h Handler) Qasqyr(c *gin.Context) {
 		return
 	}
 
-	if err := h.srv.Ebash(data.Gifts); err != nil {
+	if err := h.srv.Ebash(data); err != nil {
 		c.Status(400)
 		return
 	}
