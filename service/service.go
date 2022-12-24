@@ -14,7 +14,8 @@ func New() *Service {
 	return &Service{}
 }
 
-func (s Service) Ebash(data models.Map) error {
+func (s Service) Ebash(data models.Map) (models.Result, error) {
+	var Result models.Result
 	//1. estimate gift
 	gift := NewGift(data.Gifts)
 	optimalGifts := gift.Estimate()
@@ -27,5 +28,5 @@ func (s Service) Ebash(data models.Map) error {
 
 	//3. send gifts
 
-	return nil
+	return Result, nil
 }

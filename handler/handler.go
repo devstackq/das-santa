@@ -7,6 +7,7 @@ import (
 	"github.com/devstackq/das-santa.git/service"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -44,10 +45,14 @@ func (h Handler) Qasqyr(c *gin.Context) {
 		return
 	}
 
-	if err := h.srv.Ebash(data); err != nil {
+	result, err := h.srv.Ebash(data)
+	if err != nil {
 		c.Status(400)
 		return
 	}
+	log.Println(result, "result")
+
+	//TODO: send http.Post(url, result)
 
 	c.Status(200)
 }
