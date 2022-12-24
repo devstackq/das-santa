@@ -101,7 +101,7 @@ func (eg *EstimatationGifts) SortByVolumeAsc() {
 	eg.separateByVolume(temp)
 }
 
-func (o *Optimal) Sort()
+//func (o *Optimal) Sort()
 
 func (eg *EstimatationGifts) SortOptimal() {
 	type Optimal struct {

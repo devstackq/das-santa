@@ -19,18 +19,31 @@ type Sortir interface {
 	Sort([]models.Gift) [][]models.Gift
 }
 
+todo:
+fix - optimal
+refactor oplymorphysm
+
 func (g *GiftSrv) Estimate() [][]models.Gift {
 	log.Println("find estimate gifts", len(g.Data))
 
+	s := models.EstimatationGifts{
+		Gifts:   g.Data,
+		Optimal: [][]models.Gift{},
+	}
+	s.SortOptimal()
 	//opt := models.NewOptimal(g.Data)
 	//opt.Sort()
 	//
 	//vol := models.NewVolume(g.Data)
 	//vol.Sort()
 
-	log.Println("sorted by volume", len(vol.Result))
-	//log.Println("sorted by weight", len(optimal.ByWeight))
-	log.Println("sorted by optimal", len(opt.Result))
+	s.SortByVolumeAsc()
+	s.SortByWeightAsc()
 
-	return opt.Result
+	log.Println("sorted by volume", len(s.ByVolume))
+
+	log.Println("sorted by opt", len(s.Optimal))
+	log.Println("sorted by wei", len(s.ByWeight))
+
+	return nil
 }
