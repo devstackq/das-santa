@@ -54,5 +54,5 @@ func (h Handler) QasqyrRun(c *gin.Context) {
 
 	//TODO: send http.Post(url, result)
 
-	c.Status(200)
+	c.JSON(200, result)
 }
