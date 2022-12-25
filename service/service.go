@@ -1,6 +1,9 @@
 package service
 
-import "github.com/devstackq/das-santa.git/models"
+import (
+	"github.com/devstackq/das-santa.git/models"
+	"log"
+)
 
 type Service struct {
 	gift *GiftSrv
@@ -23,10 +26,16 @@ func (s Service) Ebash(data models.Map) (models.Result, error) {
 	//s.gift = gift //set estimate gifts
 	//2. find optimal path
 	pathFind := NewPath(optimalGifts, data.Children, data.SnowAreas)
-	pathFind.НайтиОптимальныеПути()
-	pathFind.РаздатьПодарки()
-
+	pathFind.BuildGraph()
+	var m = 0
+	for _, element := range pathFind.sortedGifts {
+		m += len(element)
+	}
+	log.Println("m", m)
+	var path = pathFind.НайтиОптимальныеПути()
+	log.Println("path", len(path))
 	//3. send gifts
+	Result.Moves = path
 
 	return Result, nil
 }
