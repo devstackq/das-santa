@@ -22,16 +22,17 @@ func (s Service) Ebash(data models.Map) (models.Result, error) {
 	//1. estimate gift
 	gift := NewGift(data.Gifts)
 	optimalGifts := gift.Estimate()
+	//var n = 0
+	//for i, i2 := range optimalGifts {
+	//	n += len(i2)
+	//	log.Println("optimalGifts", i, len(i2))
+	//}
+	//log.Println("optimalGifts", n)
 
 	//s.gift = gift //set estimate gifts
 	//2. find optimal path
 	pathFind := NewPath(optimalGifts, data.Children, data.SnowAreas)
 	pathFind.BuildGraph()
-	var m = 0
-	for _, element := range pathFind.sortedGifts {
-		m += len(element)
-	}
-	log.Println("m", m)
 	var path = pathFind.НайтиОптимальныеПути()
 	log.Println("path", len(path))
 	//3. send gifts
