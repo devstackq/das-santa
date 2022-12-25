@@ -24,7 +24,7 @@ func New(srv *service.Service) *Handler {
 		srv: srv,
 	}
 }
-func (h Handler) Qasqyr(c *gin.Context) {
+func (h Handler) QasqyrRun(c *gin.Context) {
 	data := models.Map{}
 
 	requestURL := fmt.Sprint(basePath, "/json/map/", mapID, ".json")
@@ -56,10 +56,3 @@ func (h Handler) Qasqyr(c *gin.Context) {
 
 	c.Status(200)
 }
-
-func (h Handler) GetMap(c *gin.Context) {
-}
-
-func (h Handler) SendRoute(c *gin.Context) {}
-
-func (h Handler) GetStatus(c *gin.Context) {}
