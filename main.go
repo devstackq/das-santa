@@ -13,5 +13,4 @@ func main() {
 	router := gin.Default()
 	router.POST("/qasqyr", handler.QasqyrRun)
 	router.Run("localhost:8080")
-
 }

@@ -36,7 +36,7 @@ func (g *GiftSrv) Estimate() [][]models.Gift {
 	s.SortByWeightAsc()
 
 	log.Println("sorted by volume", len(s.ByVolume))
-	log.Println("sorted by opt", len(opt.Result))
+	log.Println("sorted by opt", len(opt.Result), len(opt.Result))
 	log.Println("sorted by wei", len(s.ByWeight))
 
 	return opt.Result //FIXME try to other sorted data

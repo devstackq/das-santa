@@ -1,6 +1,7 @@
 package models
 
 import (
+	"log"
 	"math"
 	"sort"
 )
@@ -83,6 +84,7 @@ func (o *Optimal) separate(sorted []Gift) {
 	sumWeight := 0.0
 
 	var temp []Gift
+	countItem := 0
 
 	for _, gift := range sorted {
 		if sumWeight <= maxWeight && sumWeight+gift.Weight <= maxWeight || sumVolume <= maxVolume && sumVolume+gift.Volume <= maxVolume {
@@ -90,12 +92,15 @@ func (o *Optimal) separate(sorted []Gift) {
 			sumVolume += gift.Volume
 			sumWeight += gift.Weight
 		} else {
+			sorted = append(sorted, gift) //here ?
 			result = append(result, temp)
 			sumVolume = 0
 			sumWeight = 0
 			temp = nil
 		}
 	}
+
+	log.Println(countItem, "count", len(sorted))
 
 	o.Result = result
 }
