@@ -54,7 +54,7 @@ func (h Handler) Qasqyr(c *gin.Context) {
 
 	//TODO: send http.Post(url, result)
 
-	c.Status(200)
+	c.JSON(200, result)
 }
 
 func (h Handler) GetMap(c *gin.Context) {
