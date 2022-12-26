@@ -11,7 +11,6 @@ func main() {
 	srv := service.New()
 	handler := handler.New(srv)
 	router := gin.Default()
-	router.POST("/qasqyr", handler.Qasqyr)
+	router.POST("/qasqyr", handler.QasqyrRun)
 	router.Run("localhost:8080")
-
 }
