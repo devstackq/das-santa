@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/devstackq/das-santa.git/models"
@@ -14,6 +15,8 @@ import (
 const mapID = "faf7ef78-41b3-4a36-8423-688a61929c08"
 
 const basePath = "https://datsanta.dats.team"
+
+const token = `f79375bd-cd2c-40c7-8639-cb8cdb707edc`
 
 type Handler struct {
 	srv *service.Service
@@ -50,8 +53,42 @@ func (h Handler) QasqyrRun(c *gin.Context) {
 		c.Status(400)
 		return
 	}
-	log.Println(result, "result")
+	//log.Println(result, "result")
 
+	json_data, err := json.Marshal(result)
+	if err != nil {
+		log.Println(err, 1)
+		c.Status(400)
+		return
+	}
+	req, err := http.NewRequest("POST", fmt.Sprint(basePath, "/api/round"), bytes.NewBuffer(json_data))
+	if err != nil {
+		log.Println(err, 1)
+		c.Status(400)
+		return
+	}
+
+	client := &http.Client{}
+	//req.Host = basePath
+
+	req.Header.Set("Authorization", token)
+
+	respRound, err := client.Do(req)
+	if err != nil {
+		log.Println(err, 1)
+		c.Status(400)
+		return
+	}
+	var rez map[string]interface{}
+
+	err = json.NewDecoder(respRound.Body).Decode(&rez)
+	if err != nil {
+		log.Println(err, 1)
+
+		c.Status(400)
+		return
+	}
+	fmt.Println(rez, "response route")
 	//TODO: send http.Post(url, result)
 
 	c.JSON(200, result)

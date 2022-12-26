@@ -88,11 +88,11 @@ func (o *Optimal) separate(sorted []Gift) {
 
 	for _, gift := range sorted {
 		if sumWeight <= maxWeight && sumWeight+gift.Weight <= maxWeight || sumVolume <= maxVolume && sumVolume+gift.Volume <= maxVolume {
-			temp = append(temp, gift)
+			temp = append(temp, gift) //wtf
 			sumVolume += gift.Volume
 			sumWeight += gift.Weight
 		} else {
-			sorted = append(sorted, gift) //here ?
+			sorted = append(sorted, gift)
 			result = append(result, temp)
 			sumVolume = 0
 			sumWeight = 0
