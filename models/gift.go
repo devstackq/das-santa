@@ -184,7 +184,6 @@ func appendx(sorted []Gift, accum [][]Gift) [][]Gift {
 			temp = append(temp, gift)
 			sumVolume += gift.Volume
 			sumWeight += gift.Weight
-
 		} else {
 			accum = append(accum, temp)
 			ostatki = append(ostatki, gift)
@@ -198,6 +197,9 @@ func appendx(sorted []Gift, accum [][]Gift) [][]Gift {
 		temp = append(temp, ostatki...) //6, 10
 		return appendx(temp, accum)
 	} else if len(ostatki) == 0 && temp != nil {
+		accum = append(accum, temp)
+		return accum
+	} else if len(ostatki) > 0 && temp == nil {
 		accum = append(accum, temp)
 		return accum
 	}
