@@ -132,11 +132,10 @@ func (pf *PathFind) BuildGraph() {
 	})
 }
 func (pf *PathFind) НайтиОптимальныеПути() []models.Children {
-	sort.SliceStable(pf.sortedGifts, func(i, j int) bool {
-		return len(pf.sortedGifts[i]) > len(pf.sortedGifts[j])
-	})
+
 	var path []models.Children
-	for i := len(pf.sortedGifts) - 1; i > 0; i-- {
+
+	for i := len(pf.sortedGifts) - 1; i >= 0; i-- {
 		var N = len(pf.sortedGifts[i])
 		var now = &pf.SantaHome
 		for j := 0; j < N-1; j++ {

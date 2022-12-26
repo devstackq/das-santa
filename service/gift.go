@@ -28,7 +28,6 @@ func (g *GiftSrv) Estimate() [][]models.Gift {
 	}
 	opt := models.NewOptimal(g.Data)
 	opt.Sort()
-	//
 	//vol := models.NewVolume(g.Data)
 	//vol.Sort()
 

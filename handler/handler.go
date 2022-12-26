@@ -32,7 +32,6 @@ func (h Handler) QasqyrRun(c *gin.Context) {
 
 	requestURL := fmt.Sprint(basePath, "/json/map/", mapID, ".json")
 	resp, err := http.Get(requestURL)
-
 	if err != nil {
 		c.Status(400)
 		return
@@ -53,43 +52,64 @@ func (h Handler) QasqyrRun(c *gin.Context) {
 		c.Status(400)
 		return
 	}
-	//log.Println(result, "result")
+
+	result.MapID = mapID
+
+	log.Println(len(result.Moves), "len moves")
 
 	json_data, err := json.Marshal(result)
 	if err != nil {
-		log.Println(err, 1)
-		c.Status(400)
+		c.JSON(400, err)
 		return
 	}
+
 	req, err := http.NewRequest("POST", fmt.Sprint(basePath, "/api/round"), bytes.NewBuffer(json_data))
 	if err != nil {
-		log.Println(err, 1)
-		c.Status(400)
+		c.JSON(400, err)
 		return
 	}
 
 	client := &http.Client{}
-	//req.Host = basePath
 
-	req.Header.Set("Authorization", token)
+	req.Header.Set("X-API-Key", token)
 
 	respRound, err := client.Do(req)
 	if err != nil {
-		log.Println(err, 1)
-		c.Status(400)
+		c.JSON(400, err)
 		return
 	}
-	var rez map[string]interface{}
+	//var responseRound map[string]interface{}
 
-	err = json.NewDecoder(respRound.Body).Decode(&rez)
+	var responseRound models.ResponseSendRound
+
+	err = json.NewDecoder(respRound.Body).Decode(&responseRound)
 	if err != nil {
-		log.Println(err, 1)
-
-		c.Status(400)
+		c.JSON(400, err)
 		return
 	}
-	fmt.Println(rez, "response route")
-	//TODO: send http.Post(url, result)
 
-	c.JSON(200, result)
+	if responseRound.Success {
+
+		req, err := http.NewRequest("GET", fmt.Sprint(basePath, "/api/round", responseRound.RoundID), nil)
+		if err != nil {
+			c.JSON(400, err)
+			return
+		}
+		respRound, err := client.Do(req)
+		if err != nil {
+			c.JSON(400, err)
+			return
+		}
+		var responseGetRound models.ResponseGetRound
+
+		err = json.NewDecoder(respRound.Body).Decode(&responseGetRound)
+		if err != nil {
+			c.JSON(400, err)
+			return
+		}
+		c.JSONP(200, gin.H{"result": responseGetRound})
+		return
+	}
+
+	c.JSONP(400, gin.H{"result": responseRound})
 }
