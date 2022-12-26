@@ -194,8 +194,6 @@ func appendx(sorted []Gift, accum [][]Gift) [][]Gift {
 		}
 	}
 
-	log.Println(len(ostatki), len(temp), "LENki")
-
 	if len(ostatki) > 0 && temp != nil {
 		temp = append(temp, ostatki...) //6, 10
 		return appendx(temp, accum)
