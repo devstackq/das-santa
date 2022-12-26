@@ -79,12 +79,10 @@ func (o *Optimal) Sort() {
 
 }
 
-var accum [][]Gift
-
 func (o *Optimal) separate(sorted []Gift) {
-	appendx(sorted)
-	log.Println(len(accum))
-	o.Result = accum
+	var accum [][]Gift
+	o.Result = appendx(sorted, accum)
+
 }
 
 func (o *Optimal) separate2(sorted []Gift) {
@@ -166,7 +164,8 @@ func (eg *EstimatationGifts) SortByWeightAsc() {
 
 }
 
-func appendx(sorted []Gift) {
+func appendx(sorted []Gift, accum [][]Gift) [][]Gift {
+	//var accum [][]Gift
 
 	sumVolume := 0.0
 	sumWeight := 0.0
@@ -174,7 +173,7 @@ func appendx(sorted []Gift) {
 	var temp []Gift
 
 	if sorted == nil {
-		return
+		return accum
 	}
 	var ostatki []Gift
 
@@ -185,29 +184,27 @@ func appendx(sorted []Gift) {
 			temp = append(temp, gift)
 			sumVolume += gift.Volume
 			sumWeight += gift.Weight
-		} else {
 
+		} else {
 			accum = append(accum, temp)
 			ostatki = append(ostatki, gift)
 			sumVolume = 0
 			sumWeight = 0
 			temp = nil
-
 		}
 	}
 
-	if len(ostatki) > 0 {
+	log.Println(len(ostatki), len(temp), "LENki")
+
+	if len(ostatki) > 0 && temp != nil {
 		temp = append(temp, ostatki...) //6, 10
-		appendx(temp)
-	} else {
+		return appendx(temp, accum)
+	} else if len(ostatki) == 0 && temp != nil {
 		accum = append(accum, temp)
-		return
+		return accum
 	}
-
-	return
+	return accum
 }
-
-//2-7; 1-12
 
 func (eg *EstimatationGifts) separateByWeight(data []Gift) {
 	result := [][]Gift{}
