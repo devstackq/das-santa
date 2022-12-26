@@ -31,11 +31,28 @@ func (s Service) Ebash(data models.Map) (models.Result, error) {
 	for _, element := range pathFind.sortedGifts {
 		m += len(element)
 	}
-	log.Println("m", m)
+	log.Println("len gift", m)
 	var path = pathFind.НайтиОптимальныеПути()
-	log.Println("path", len(path))
+	log.Println("len path", len(path))
 	//3. send gifts
 	Result.Moves = path
 
+	sbs := setStackOfBags(optimalGifts)
+	Result.StackOfBags = sbs
+
 	return Result, nil
+}
+
+func setStackOfBags(optimalGifts [][]models.Gift) [][]int {
+	stackOfBags := [][]int{}
+
+	for _, giftIndex := range optimalGifts {
+		ids := []int{}
+
+		for _, gift := range giftIndex {
+			ids = append(ids, gift.ID)
+		}
+		stackOfBags = append(stackOfBags, ids)
+	}
+	return stackOfBags
 }

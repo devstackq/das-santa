@@ -45,26 +45,28 @@ func NewOptimal(data []Gift) *Optimal {
 	}
 }
 
+type IndexValue struct {
+	IndexGift int
+	Value     float64
+}
+
 func (o *Optimal) Sort() {
-	type IndexValue struct {
-		IndexGift int
-		Value     float64
-	}
+
 	temp := o.gifts
 	var opts []IndexValue
 
+	diff := 0.0
 	//prepare data
 	for idx, gift := range temp {
-		diff := (gift.Weight / maxWeight) - (gift.Volume / maxVolume)
+		diff = (gift.Weight / maxWeight) - (gift.Volume / maxVolume)
 		opt := IndexValue{}
 		opt.IndexGift = idx
 		opt.Value = math.Abs(diff)
-
 		opts = append(opts, opt)
 	}
 
 	sort.SliceStable(opts, func(i, j int) bool {
-		return opts[i].Value < opts[j].Value
+		return opts[i].Value > opts[j].Value
 	})
 
 	sorted := make([]Gift, len(opts))
@@ -76,7 +78,16 @@ func (o *Optimal) Sort() {
 	o.separate(sorted)
 
 }
+
+var accum [][]Gift
+
 func (o *Optimal) separate(sorted []Gift) {
+	appendx(sorted)
+	log.Println(len(accum))
+	o.Result = accum
+}
+
+func (o *Optimal) separate2(sorted []Gift) {
 
 	var result [][]Gift
 
@@ -84,23 +95,63 @@ func (o *Optimal) separate(sorted []Gift) {
 	sumWeight := 0.0
 
 	var temp []Gift
-	countItem := 0
 
-	for _, gift := range sorted {
-		if sumWeight <= maxWeight && sumWeight+gift.Weight <= maxWeight || sumVolume <= maxVolume && sumVolume+gift.Volume <= maxVolume {
-			temp = append(temp, gift) //wtf
-			sumVolume += gift.Volume
-			sumWeight += gift.Weight
+	ostatki := []Gift{}
+
+	for idx := 0; idx <= len(sorted)-1; idx++ {
+
+		if sumWeight <= maxWeight && sumWeight+sorted[idx].Weight <= maxWeight || sumVolume <= maxVolume && sumVolume+sorted[idx].Volume <= maxVolume {
+			temp = append(temp, sorted[idx])
+
+			sumVolume += sorted[idx].Volume
+			sumWeight += sorted[idx].Weight
 		} else {
-			sorted = append(sorted, gift)
+			//sorted = append(sorted, sorted[idx])
+			ostatki = append(ostatki, sorted[idx])
 			result = append(result, temp)
+
 			sumVolume = 0
 			sumWeight = 0
 			temp = nil
 		}
 	}
 
-	log.Println(countItem, "count", len(sorted))
+	//if temp != nil {
+	//	ostatki = append(ostatki, temp...)
+	//}
+	sumVolume = 0
+	sumWeight = 0
+	temp = nil
+
+	log.Println("ostatki len", len(ostatki))
+
+	for _, gift := range ostatki {
+		if sumWeight <= maxWeight && sumWeight+gift.Weight <= maxWeight || sumVolume <= maxVolume && sumVolume+gift.Volume <= maxVolume {
+			temp = append(temp, gift)
+			sumVolume += gift.Volume
+			sumWeight += gift.Weight
+
+		} else {
+			//ostatki = append(ostatki, gift)
+			//log.Println("ostatki obj", gift)
+			result = append(result, temp)
+			ostatki = append(ostatki, gift)
+
+			sumVolume = 0
+			sumWeight = 0
+			temp = nil
+		}
+	}
+	log.Println("ostatki temp", len(temp))
+
+	if temp != nil {
+		result = append(result, temp)
+	}
+	//TODO ostatki check if weight || volume > ? case; recursion call
+
+	//result = append(result, ostatki)
+
+	log.Println(len(temp), "len temp", len(ostatki), "len ostatki")
 
 	o.Result = result
 }
@@ -114,6 +165,49 @@ func (eg *EstimatationGifts) SortByWeightAsc() {
 	eg.separateByWeight(temp)
 
 }
+
+func appendx(sorted []Gift) {
+
+	sumVolume := 0.0
+	sumWeight := 0.0
+
+	var temp []Gift
+
+	if sorted == nil {
+		return
+	}
+	var ostatki []Gift
+
+	//recursion append
+
+	for _, gift := range sorted {
+		if sumWeight <= maxWeight && sumWeight+gift.Weight <= maxWeight || sumVolume <= maxVolume && sumVolume+gift.Volume <= maxVolume {
+			temp = append(temp, gift)
+			sumVolume += gift.Volume
+			sumWeight += gift.Weight
+		} else {
+
+			accum = append(accum, temp)
+			ostatki = append(ostatki, gift)
+			sumVolume = 0
+			sumWeight = 0
+			temp = nil
+
+		}
+	}
+
+	if len(ostatki) > 0 {
+		temp = append(temp, ostatki...) //6, 10
+		appendx(temp)
+	} else {
+		accum = append(accum, temp)
+		return
+	}
+
+	return
+}
+
+//2-7; 1-12
 
 func (eg *EstimatationGifts) separateByWeight(data []Gift) {
 	result := [][]Gift{}
